@@ -1,0 +1,206 @@
+
+<!doctype html>
+<html>
+    <head>
+		<title>Encode-Decode</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		
+       
+    </head>
+    <body>
+		<div class="container" style="margin-top:5%" > 
+			<div class="row">
+				<fieldset>
+					<legend>Encode</legend>
+					  
+					<div class="col-lg-4" style="margin-top:10px">
+						<label for="txtNumberEncode">Number</label>
+						<input id="txtNumberEncode" class="form-control" name="txtNumberEncode" type="text" maxlength="5" placeholder="Input Number" />
+					</div>
+				
+					<div class="box-body col-lg-2" style="margin-top:35px">
+					  <button id="btnEncode" type="button" class="btn btn-primary btn-block btn-flat" >Convert</button>
+					</div>
+					
+					<div class="box-body col-lg-2" style="margin-top:35px">
+					  <button id="btnEncodeReset" type="button" class="btn btn-danger btn-block btn-flat" >Reset</button>
+					</div>
+					
+					<div class="col-lg-4" style="margin-top:10px">
+						<label for="txtValueEncode">Encode Value</label>
+						<input id="txtValueEncode" class="form-control" name="txtValueEncode" type="text" disabled />
+					</div>
+					
+				</fieldset>
+				
+			</div>
+		</div>
+		<div class="container" style="margin-top:5%" > 
+			<div class="row">
+				<fieldset>
+					<legend>Decode</legend>
+					  
+					<div class="col-lg-4" style="margin-top:10px">
+						<label for="txtValueDecode">Encode Value</label>
+						<input id="txtValueDecode" class="form-control" name="txtValueDecode" type="text" maxlength="4" placeholder="Input Code" />
+					</div>
+				
+					<div class="box-body col-lg-2" style="margin-top:35px">
+					  <button id="btnDecode" type="button" class="btn btn-primary btn-block btn-flat" >Convert</button>
+					</div>
+					
+					<div class="box-body col-lg-2" style="margin-top:35px">
+					  <button id="btnDecodeReset" type="button" class="btn btn-danger btn-block btn-flat" >Reset</button>
+					</div>
+					
+					<div class="col-lg-4" style="margin-top:10px">
+						<label for="txtNumberDecode">Number</label>
+						<input id="txtNumberDecode" class="form-control" name="txtNumberDecode" type="text" disabled/>
+					</div>
+					
+					</fieldset>
+				
+			</div>
+		</div>
+		
+		<!-- Modal -->
+		 <div id="myModal" class="modal fade" role="dialog" style="z-index:6000">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Error</h4>
+					</div>
+					<div class="modal-body">
+						<p><span id="spTexto"></span></p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		 <script type="text/javascript" >
+		 
+			 $(document).ready(function () {
+			 
+				FillData();
+			 	
+				$("#btnEncode").click(function (e) {
+					Encode();
+					return false;
+				});
+				
+				$("#btnDecode").click(function (e) {
+					Decode();
+					return false;
+				});
+				
+				$("#btnEncodeReset").click(function (e) {
+					$("#txtNumberEncode").val("");
+					$("#txtValueEncode").val("");
+					return false;
+				});
+				
+				$("#btnDecodeReset").click(function (e) {
+					$("#txtValueDecode").val("");
+					$("#txtNumberDecode").val("");
+					return false;
+				});
+				
+				
+				 $("#txtNumberEncode").keydown(function (e) {
+					key = (document.all) ? e.keyCode : e.which;
+					if (key == 13) {
+						Encode();
+						return false;
+					}
+				});
+				
+				$("#txtValueDecode").keydown(function (e) {
+					key = (document.all) ? e.keyCode : e.which;
+					if (key == 13) {
+						Decode();
+						return false;
+					}
+				});
+				   
+			});
+		 
+		 
+			function ShowAlert(text) {
+				$("#spTexto").text(text);
+				$('#myModal').modal('show');
+			}
+			
+			function KeyGen(keyLength) {
+				var i, key = "", characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+				var charactersLength = characters.length;
+
+				for (i = 0; i < keyLength; i++) {
+					key += characters.substr(Math.floor((Math.random() * charactersLength) + 1), 1);
+				}
+
+				return key;
+			}
+
+			var initRange = -8192;
+			var endRange = 8191;
+			var data = [];
+			
+			function FillData(){
+				for(var i = initRange; i<=endRange; i++){
+					var newValue = KeyGen(4);
+					var convertion = {number: i, value: newValue};
+					data.push(convertion);
+				}
+			}
+			
+			
+		    function Encode(){
+				var number = $("#txtNumberEncode").val().trim();
+				var inRange = parseInt(number) >= initRange &&  parseInt(number) <= endRange ? true : false;
+				
+				if(number == "" || !inRange){
+					ShowAlert("please input number between -8192 and 8191");
+					return;
+				}
+				
+				var item = data.find(function(convertion) { 
+					return convertion.number == number; 
+				});
+				
+				var result = typeof item === 'undefined' ? "No convertion exists" : item.value;
+				$("#txtValueEncode").val(result);
+			 }
+			 
+			 
+			 function Decode(){
+			 	var value = $("#txtValueDecode").val().trim();
+				
+				if(value == ""  || value.length < 4 ){
+					ShowAlert("please input coded value, at least 4 characters");
+					return;
+				}
+				
+				var item = data.find(function(convertion) { 
+					return convertion.value == value;
+				});
+				
+				var result = typeof item === 'undefined' ? "No convertion exists" : item.number;
+				$("#txtNumberDecode").val(result);
+			 }
+            
+        </script>
+    </body>
+</html>
+
+
+
